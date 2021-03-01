@@ -24,6 +24,53 @@ struct RTVec3D {
 		return (x == 0.f && y == 0.f && z == 0.f);
 	}
 
+	// Returns the dot product between two 3D vectors. 
+	static float DotProduct(RTVec3D const& a, RTVec3D const& b)
+	{
+		return { a.x * b.x + a.y * b.y + a.z * b.z };
+	}
+
+	// Retruns the cross product between two 3D vectors. 
+	static RTVec3D CrossProduct(RTVec3D const& a, RTVec3D const& b)
+	{
+		return {
+			a.y * b.z - a.z * b.y,
+			a.z * b.x - a.x * b.z,
+			a.x * b.y - a.y * b.x
+		};
+	}
+
+	// Returns a new 3D vector which is a projection of vector a onto vector b.
+	static RTVec3D Projection(RTVec3D const& a, RTVec3D const& b)
+	{
+		return { b * (DotProduct(a,b) / DotProduct(b,b)) };
+	}
+
+	// Returns a new 3D vector which is a rejection of vector a from b and is perpendicular to b. 
+	static RTVec3D Rejection(RTVec3D const& a, RTVec3D const& b)
+	{
+		return { (a - b) * (DotProduct(a,b) / DotProduct(b,b)) };
+	}
+
+	// Returns the magnitude, or length, of the vector.
+	float Magnitude() const
+	{
+		float s = (x * x) + (y * y) + (z * z);
+		return (float)sqrt( s );
+	}
+
+	// Returns a normalised copy of the vector, if it's safe to do so, otherwise returns a zero vector.
+	RTVec3D GetNormal() const
+	{ 
+		return !isZeroVector() ? RTVec3D{ *this / this->Magnitude() } : RTVec3D{ 0.f, 0.f, 0.f };
+	}
+
+	// Returns a normalised copy of the vector, but doesn't check for zero length. 
+	RTVec3D GetUnsafeNormal() const
+	{
+		return RTVec3D{ *this / this->Magnitude() };
+	}
+
 	// Operator overloads
 
 	// Using the [] operator to iterate over the member variables like an array.
@@ -47,7 +94,7 @@ struct RTVec3D {
 	}
 
 	// Scalar division.
-	RTVec3D const& operator /=(float s)
+	RTVec3D const& operator /=(float s) 
 	{
 		s = 1.f / s; 
 		x *= s;
@@ -56,44 +103,56 @@ struct RTVec3D {
 		return *this;
 	}
 
-	// Returns the magnitude, or length, of the vector.
-	float Magnitude() const
+	RTVec3D operator *(float s) const 
 	{
-		return sqrt( (x * x) + (y * y) + (z * z) );
+		return { x * s, y * s, z * s };
 	}
 
-	// Returns a normalised copy of the vector, if it's safe to do so, otherwise returns a zero vector.
-	RTVec3D GetNormal() const
-	{ 
-		return !isZeroVector() ? RTVec3D{ /**/ } : RTVec3D{ 0.f, 0.f, 0.f };
+	RTVec3D operator /(float s) const
+	{
+		s = 1.f / s;
+		return { x * s, y * s, z * s };
 	}
 
-	// Returns a normalised copy of the vector, but doesn't check for zero length. 
-	RTVec3D GetUnsafeNormal() const
+	RTVec3D& operator +=(RTVec3D const& v)
 	{
+		x += v.x;
+		y += v.y;
+		z += v.z;
+		return (*this);
+	}
 
+	RTVec3D& operator -=(RTVec3D const& v)
+	{
+		x -= v.x;
+		y -= v.y;
+		z -= v.z;
+		return (*this);
+	}
+
+	RTVec3D operator +(RTVec3D const& v)
+	{
+		return { x + v.x, y + v.y, z + v.z };
+	}
+
+	RTVec3D operator -(RTVec3D const& v)
+	{
+		return { x - v.x, y - v.y, z - v.z };
+	}
+
+	friend RTVec3D operator +(RTVec3D const& a, RTVec3D const& b)
+	{
+		return { a.x + b.x, a.y + b.y, a.z + b.z };
+	}
+
+	friend RTVec3D operator -(RTVec3D const& a, RTVec3D const& b)
+	{
+		return { a.x - b.x, a.y - b.y, a.z - b.z };
 	}
 
 	// Member variables;
 	float x, y, z;
 };
-
-inline RTVec3D operator *(RTVec3D const& v, float s)
-{
-	return { v.x * s, v.y * s, v.z * s };
-}
-
-inline RTVec3D operator /(RTVec3D const& v, float s)
-{
-	s = 1.f / s;
-	return { v.x * s, v.y * s, v.z * s };
-}
-
-inline RTVec3D operator -(RTVec3D const& v)
-{
-	return { -v.x, -v.y, -v.z };
-}
-
 
 
 
