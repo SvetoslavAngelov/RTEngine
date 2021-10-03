@@ -74,7 +74,7 @@ void RTDeviceResources::InitialiseDXGIAdapter()
 		throw std::exception("DXGI 1.6 interface not supported.");
 	}
 
-	// Go through all available hardware adapters a and find the highest performance one. 
+	// Go through all available hardware adapters and find the highest performance one. 
 	for (UINT adapterID = 0; DXGI_ERROR_NOT_FOUND != dxgiFactory6->EnumAdapterByGpuPreference(adapterID, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter)); ++adapterID)
 	{
 		DXGI_ADAPTER_DESC1 adapterDesc; 
@@ -288,7 +288,7 @@ void RTDeviceResources::CreateWindowSizeDependentResources()
 	// Reset the index to the current back buffer.
 	backBufferIndex = swapChain->GetCurrentBackBufferIndex();
 
-	// TODO Dept buffer set up. 
+	// TODO Depth buffer set up. 
 
 	// Set the 3D rendering viewport and scissor rectangle to target the entire window. 
 	screenViewport.TopLeftX = screenViewport.TopLeftY = 0.f; 
