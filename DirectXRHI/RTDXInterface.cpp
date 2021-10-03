@@ -36,7 +36,7 @@ void RTDXInterface::OnRender()
 	deviceResources->Prepare(); 
 
 	// Populate command list.
-	float const clearColour[] = { 0.f, 0.2f, 0.4f, 1.0f };
+	float const clearColour[] = { 0.f, 0.4f, 0.4f, 1.0f };
 	auto commandList = deviceResources->GetCommandList();
 	auto rtvHandle = deviceResources->GetRenderTargetView(); 
 	commandList->ClearRenderTargetView(rtvHandle, clearColour, 0, nullptr);

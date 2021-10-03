@@ -84,6 +84,15 @@ struct RTVec3D {
 		return ((&x)[i]);
 	}
 
+	// Assignment oprator.
+	RTVec3D const& operator =(RTVec3D const& a)
+	{
+		x = a.x; 
+		y = a.y;
+		z = a.z;
+		return *this;
+	}
+
 	// Scalar multiplication. 
 	RTVec3D const& operator *=(float s)
 	{
@@ -130,24 +139,24 @@ struct RTVec3D {
 		return (*this);
 	}
 
-	RTVec3D operator +(RTVec3D const& v)
+	RTVec3D operator +(RTVec3D const& v) const
 	{
 		return { x + v.x, y + v.y, z + v.z };
 	}
 
-	RTVec3D operator -(RTVec3D const& v)
+	RTVec3D operator -(RTVec3D const& v) const
 	{
 		return { x - v.x, y - v.y, z - v.z };
 	}
 
-	friend RTVec3D operator +(RTVec3D const& a, RTVec3D const& b)
+	friend bool operator ==(RTVec3D const& a, RTVec3D const& b)
 	{
-		return { a.x + b.x, a.y + b.y, a.z + b.z };
+		return a.x == b.x && a.y == b.y && a.z == b.z;
 	}
 
-	friend RTVec3D operator -(RTVec3D const& a, RTVec3D const& b)
+	friend bool operator !=(RTVec3D const& a, RTVec3D const& b)
 	{
-		return { a.x - b.x, a.y - b.y, a.z - b.z };
+		return !(a == b);
 	}
 
 	// Member variables;

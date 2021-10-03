@@ -145,7 +145,6 @@
     <ClCompile Include="DirectXRHI\RTDXInterface.cpp" />
     <ClCompile Include="DirectXRHI\RTDeviceResources.cpp" />
     <ClCompile Include="DirectXRHI\RTWinApp.cpp" />
-    <ClCompile Include="Math\RTVec3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DirectXRHI\d3dx12.h" />
@@ -154,6 +153,10 @@
     <ClInclude Include="DirectXRHI\RTDeviceResources.h" />
     <ClInclude Include="DirectXRHI\RTWinApp.h" />
     <ClInclude Include="DirectXRHI\stdafx.h" />
+    <ClInclude Include="Math\RTMatrix3D.h" />
+    <ClInclude Include="Math\RTPoint2D.h" />
+    <ClInclude Include="Math\RTPoint3D.h" />
+    <ClInclude Include="Math\RTVec2D.h" />
     <ClInclude Include="Math\RTVec3D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
