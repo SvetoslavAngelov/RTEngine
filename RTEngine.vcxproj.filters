@@ -62,5 +62,11 @@
     <ClInclude Include="Math\RTPoint3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Math\RTMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\RTNormal3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

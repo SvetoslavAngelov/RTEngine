@@ -1,4 +1,5 @@
 #pragma once
+
 #include <math.h>
 
 struct RTVec3D {
@@ -84,35 +85,32 @@ struct RTVec3D {
 		return ((&x)[i]);
 	}
 
-	// Assignment oprator.
-	RTVec3D const& operator =(RTVec3D const& a)
+	RTVec3D const& operator =(RTVec3D const& v)
 	{
-		x = a.x; 
-		y = a.y;
-		z = a.z;
+		x = v.x;
+		y = v.y;
+		z = v.z;
 		return *this;
 	}
 
-	// Scalar multiplication. 
 	RTVec3D const& operator *=(float s)
 	{
-		x *= s; 
-		y *= s;
-		z *= s;
-		return *this;
-	}
-
-	// Scalar division.
-	RTVec3D const& operator /=(float s) 
-	{
-		s = 1.f / s; 
 		x *= s;
 		y *= s;
 		z *= s;
 		return *this;
 	}
 
-	RTVec3D operator *(float s) const 
+	RTVec3D const& operator /=(float s)
+	{
+		s = 1.f / s;
+		x *= s;
+		y *= s;
+		z *= s;
+		return *this;
+	}
+
+	RTVec3D operator *(float s) const
 	{
 		return { x * s, y * s, z * s };
 	}
