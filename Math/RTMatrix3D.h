@@ -1,4 +1,5 @@
 #pragma once
+
 #include "RTVec3D.h"
 
 struct RTMatrix3D {

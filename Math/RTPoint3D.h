@@ -1,4 +1,5 @@
 #pragma once
+
 #include "RTPoint2D.h"
 #include "RTVec2D.h"
 #include "RTVec3D.h"
@@ -17,7 +18,7 @@ struct RTPoint3D
     }
 
     // Takes another Point2D object
-    explicit RTPoint3D(RTPoint3D const& p) :
+    RTPoint3D(RTPoint3D const& p) :
         x{ p.x }, y{ p.y }, z{ p.z }
     {
 
@@ -37,7 +38,7 @@ struct RTPoint3D
 
     }
 
-   // Takes a RTVec3D object
+    // Takes a RTVec3D object
     explicit RTPoint3D(RTVec3D const& v) :
         x{ v.x }, y{ v.y }, z{ v.z }
     {
@@ -70,13 +71,21 @@ struct RTPoint3D
         };
     }
 
-    // Operator overloads
+    /*
+        Operator overloads
+    */ 
 
     float& operator [](int i)
     {
         return ((&x)[i]);
     }
 
+    float const& operator [](int i) const
+    {
+        return ((&x)[i]);
+    }
+
+    // Assignemt operator
     RTPoint3D const& operator =(RTPoint3D const& p)
     {
         x = p.x;
@@ -85,14 +94,21 @@ struct RTPoint3D
         return *this;
     }
 
+    /*
+        Addition and substraction.
+    */
+
     // Adding a vector to a point offsets the point in a given direction, resulting in a new point in space. 
-    RTPoint3D const& operator +(RTVec3D const& v) const
+    RTPoint3D const& operator +(RTVec3D const& v)
     {
-        return RTPoint3D{ x + v.x, y + v.y, z + v.z };
+        x += v.x;
+        y += v.y;
+        z += v.z;
+        return *this;
     }
 
     // Substracting two points returns the vector between them. 
-    RTVec3D const& operator -(RTPoint3D const& p) const
+    RTVec3D operator -(RTPoint3D const& p) const
     {
         return RTVec3D{ x - p.x, y - p.y, z - p.z };
     }
@@ -106,11 +122,6 @@ struct RTPoint3D
         return *this;
     }
 
-    RTPoint3D const& operator -(RTVec3D const& v) const
-    {
-        return RTPoint3D{ x - v.x, y - v.y, z - v.z };
-    }
-
     // Substracting a point from a vector returns a new point with the vector offset applied. 
     RTPoint3D const& operator -=(RTVec3D const& v)
     {
@@ -120,15 +131,25 @@ struct RTPoint3D
         return *this;
     }
 
-    RTPoint3D const& operator *(float s) const
+    /*
+        Scalar multiplication and division
+    */
+
+    RTPoint3D const& operator *(float s)
     {
-        return RTPoint3D{ x * s, y * s, z * s };
+        x *= s;
+        y *= s;
+        z *= s;
+        return *this;
     }
 
-    RTPoint3D const& operator /(float s) const
+    RTPoint3D const& operator /(float s)
     {
         s = 1 / s;
-        return RTPoint3D{ x * s, y * s, z * s };
+        x *= s;
+        y *= s;
+        z *= s;
+        return *this;
     }
 
     RTPoint3D const& operator *=(float s)
@@ -148,6 +169,10 @@ struct RTPoint3D
         return *this;
     }
 
+    /*
+        Comparison operators
+    */
+
     friend bool operator ==(RTPoint3D const& a, RTPoint3D const& b)
     {
         return a.x == b.x && a.y == b.y && a.z == b.z;
@@ -156,16 +181,6 @@ struct RTPoint3D
     friend bool operator !=(RTPoint3D const& a, RTPoint3D const& b)
     {
         return !(a == b);
-    }
-
-    friend RTPoint3D operator +(RTPoint3D const& p, RTVec3D const& v)
-    {
-        return RTPoint3D{ p.x + v.x, p.y + v.y, p.z + v.z };
-    }
-
-    friend RTVec3D operator -(RTPoint3D const& a, RTPoint3D const& b)
-    {
-        return RTVec3D{ a.x - b.x, a.y - b.y, a.z - b.z };
     }
 
     // Member variables

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "RTVec2D.h"
 
 struct RTPoint2D
@@ -14,7 +15,7 @@ struct RTPoint2D
     }
 
     // Takes another Point2D object
-    explicit RTPoint2D(RTPoint2D const& p) :
+    RTPoint2D(RTPoint2D const& p) :
         x{ p.x }, y{ p.y }
     {
 
@@ -26,10 +27,18 @@ struct RTPoint2D
     {
 
     }
-   
-    // Operator overloads
-    
+
+    /*
+        Operator overloads.
+    */
+
+    // Using the [] operator to iterate over the member variables like an array.
     float& operator [](int i)
+    {
+        return ((&x)[i]);
+    }
+
+    float const& operator [](int i) const
     {
         return ((&x)[i]);
     }
@@ -41,14 +50,20 @@ struct RTPoint2D
         return *this;
     }
 
+    /*
+        Addition and substraction
+    */
+
     // Adding a vector to a point offsets the point in a given direction, resulting in a new point in space.
-    RTPoint2D const& operator +(RTVec2D const& v) const
+    RTPoint2D const& operator +(RTVec2D const& v)
     {
-        return RTPoint2D{ x + v.x, y + v.y };
+        x += v.x;
+        y += v.y;
+        return *this;
     }
 
     // Substracting two points returns the vector between them. 
-    RTVec2D const& operator -(RTPoint2D const& p) const
+    RTVec2D operator -(RTPoint2D const& p) const
     {
         return RTVec2D{ x - p.x, y - p.y };
     }
@@ -69,32 +84,42 @@ struct RTPoint2D
         return *this;
     }
 
-    RTPoint2D const& operator *(float s) const
+    /*
+        Scalar multiplication and division
+    */
+    RTPoint2D const& operator *(float s)
     {
-        return RTPoint2D{ x * s, y * s };
+        x *= s;
+        y *= s;
+        return *this;
     }
 
-    RTPoint2D const& operator /(float s) const
+    RTPoint2D const& operator /(float s)
     {
-        s = 1 / s; 
-        return RTPoint2D{ x * s, y * s };
+        s = 1 / s;
+        x *= s;
+        y *= s;
+        return *this;
     }
 
     RTPoint2D const& operator *=(float s)
     {
-        x *= s; 
-        y *= s; 
+        x *= s;
+        y *= s;
         return *this;
     }
 
     RTPoint2D const& operator /=(float s)
     {
-        s = 1 / s; 
-        x *= s; 
+        s = 1 / s;
+        x *= s;
         y *= s;
-        return *this; 
+        return *this;
     }
 
+    /*
+        Comparison operators.
+    */
     friend bool operator ==(RTPoint2D const& a, RTPoint2D const& b)
     {
         return a.x == b.x && a.y == b.y;
@@ -105,6 +130,6 @@ struct RTPoint2D
         return !(a == b);
     }
 
-     // Member variables
-     float x, y;
+    // Member variables
+    float x, y;
 };
