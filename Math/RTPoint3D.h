@@ -45,32 +45,6 @@ struct RTPoint3D
 
     }
 
-    // Returns the distance between two points. 
-    static float Distance(RTPoint3D const& a, RTPoint3D const& b)
-    {
-        return (a - b).Magnitude();
-    }
-
-    // Returns a new point with the component min values between two points.
-    static RTPoint3D Min(RTPoint3D const& a, RTPoint3D const& b)
-    {
-        return RTPoint3D{
-            std::min<float>(a.x, b.x),
-            std::min<float>(a.y, b.y),
-            std::min<float>(a.z, b.z)
-        };
-    }
-
-    // Returns a new point with the component max values between two points. 
-    static RTPoint3D Max(RTPoint3D const& a, RTPoint3D const& b)
-    {
-        return RTPoint3D{
-            std::max<float>(a.x, b.x),
-            std::max<float>(a.y, b.y),
-            std::max<float>(a.z, b.z)
-        };
-    }
-
     /*
         Operator overloads
     */ 
@@ -99,12 +73,9 @@ struct RTPoint3D
     */
 
     // Adding a vector to a point offsets the point in a given direction, resulting in a new point in space. 
-    RTPoint3D const& operator +(RTVec3D const& v)
+    RTPoint3D operator +(RTVec3D const& v) const
     {
-        x += v.x;
-        y += v.y;
-        z += v.z;
-        return *this;
+        return RTPoint3D{ x + v.x, y + v.y, z + v.z };
     }
 
     // Substracting two points returns the vector between them. 
@@ -135,21 +106,15 @@ struct RTPoint3D
         Scalar multiplication and division
     */
 
-    RTPoint3D const& operator *(float s)
+    RTPoint3D operator *(float s) const
     {
-        x *= s;
-        y *= s;
-        z *= s;
-        return *this;
+        return RTPoint3D{ x * s, y * s, z * s };
     }
 
-    RTPoint3D const& operator /(float s)
+    RTPoint3D operator /(float s) const
     {
         s = 1 / s;
-        x *= s;
-        y *= s;
-        z *= s;
-        return *this;
+        return RTPoint3D{ x * s, y * s, z * s };
     }
 
     RTPoint3D const& operator *=(float s)

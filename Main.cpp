@@ -1,4 +1,3 @@
-#include "DirectXRHI/stdafx.h"
 #include "DirectXRHI/RTDXInterface.h"
 #include "DirectXRHI/RTWinApp.h"
 #include "Math/RTMath.h"
