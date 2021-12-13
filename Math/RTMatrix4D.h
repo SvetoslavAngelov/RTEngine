@@ -1,6 +1,6 @@
 #pragma once
 #include <algorithm>
-#include "RTVec3D.h"
+#include "RTMath.h"
 
 struct RTMatrix4D {
 
@@ -13,12 +13,6 @@ struct RTMatrix4D {
 			n[1][0] = n[1][2] = n[1][3] = 
 				n[2][0] = n[2][1] = n[2][3] = 
 					n[3][0] = n[3][1] = n[3][2] = 0.f;
-	}
-
-	// Constructor from array.
-	explicit RTMatrix4D(float m[4][4])
-	{
-		std::copy_n(m, 16, n);
 	}
 
 	// Constructor from individual floats.
@@ -53,10 +47,8 @@ struct RTMatrix4D {
 		Member functions. 	
 	*/
 
-	RTMatrix4D Inverse(RTMatrix4D const& m)
+	RTMatrix4D Inverse(RTMatrix4D const& m) const
 	{
-		using namespace RTMath;
-		
 		RTVec3D a = m[0];
 		RTVec3D b = m[1];
 		RTVec3D c = m[2];
@@ -101,6 +93,38 @@ struct RTMatrix4D {
 				res.n[i][j] = m1.n[i][0] * m2.n[0][j] + m1.n[i][1] * m2.n[1][j] +
 				m1.n[i][2] * m2.n[2][j] + m1.n[i][3] * m2.n[3][j];
 		return res;
+	}
+
+	friend bool operator ==(RTMatrix4D const& m1, RTMatrix4D const& m2)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; i < 4; ++j)
+			{
+				if (m1[i][j] != m2[i][j])
+				{
+					return false;
+				}
+					
+			}
+		}
+		return true;
+	}
+
+	friend bool operator !=(RTMatrix4D const& m1, RTMatrix4D const& m2)
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			for (int j = 0; i < 4; ++j)
+			{
+				if (m1[i][j] != m2[i][j])
+				{
+					return true;
+				}
+
+			}
+		}
+		return false;
 	}
 
 	// Helper function to extract a 3D vector from the matrix. The fourth element contains the weight, so is omitted. 

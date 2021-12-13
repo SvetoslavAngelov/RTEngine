@@ -340,7 +340,7 @@ void RTDeviceResources::ResizeWindowSizeDependentResources()
 		fenceValues[n] = fenceValues[backBufferIndex];
 	}
 
-	// Determine the render target size in pixesl.
+	// Determine the render target size in pixels.
 	long backBufferWidth = std::max<long>(winOutputSize.right - winOutputSize.left, 1);
 	long backBufferHeight = std::max<long>(winOutputSize.bottom - winOutputSize.top, 1);
 
