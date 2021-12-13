@@ -4,8 +4,15 @@
 
 struct RTMatrix3D {
 
-	// Leaving the member variables uninitialised by default.
-	RTMatrix3D() = default;
+	// The default consutrctor sets the matrix to its identity matrix. 
+	RTMatrix3D()
+	{
+		n[0][0] = n[1][1] = n[2][2] = 1.f;
+		
+		n[0][1] = n[0][2] =
+			n[1][0] = n[1][2] =
+				n[2][0] = n[2][1] = 0.f;
+	}
 
 	// Constructor taking floating point numbers in row major.  
 	RTMatrix3D(	float a00, float a01, float a02,
@@ -41,18 +48,14 @@ struct RTMatrix3D {
 		n[2][2] = c.z;
 	}
 
-	RTMatrix3D const operator*(RTMatrix3D const& B)
+	friend RTMatrix3D const operator*(RTMatrix3D const& m1, RTMatrix3D const& m2)
 	{
-		return RTMatrix3D{	n[0][0] * B.n[0][0] + n[0][1] * B.n[1][0] + n[0][2] * B.n[2][0],
-							n[0][0] * B.n[0][1] + n[0][1] * B.n[1][1] + n[0][2] * B.n[2][1],
-							n[0][0] * B.n[0][2] + n[0][1] * B.n[1][2] + n[0][2] * B.n[2][2],
-							n[1][0] * B.n[0][0] + n[1][1] * B.n[1][0] + n[1][2] * B.n[2][0],
-							n[1][0] * B.n[0][1] + n[1][1] * B.n[1][1] + n[1][2] * B.n[2][1],
-							n[1][0] * B.n[0][2] + n[1][1] * B.n[1][2] + n[1][2] * B.n[2][2],
-							n[2][0] * B.n[0][0] + n[2][1] * B.n[1][0] + n[2][2] * B.n[2][0],
-							n[2][0] * B.n[0][1] + n[2][1] * B.n[1][1] + n[2][2] * B.n[2][1],
-							n[2][0] * B.n[0][2] + n[2][1] * B.n[1][2] + n[2][2] * B.n[2][2]
-		};
+		RTMatrix3D res;
+		for (int i = 0; i < 3; ++i)
+			for (int j = 0; j < 3; ++j)
+				res.n[i][j] = m1.n[i][0] * m2.n[0][j] + m1.n[i][1] * m2.n[1][j] +
+				m1.n[i][2] * m2.n[2][j];
+		return res;
 	}
 
 	RTVec3D const operator*(RTVec3D const& v)
@@ -62,18 +65,14 @@ struct RTMatrix3D {
 						n[2][0] * v[0] + n[2][1] * v[1] + n[2][2] * v[2] };
 	}
 
-	// Helper function to extract a 3D vector from the matrix. Returns zero vector if index is larger than 2. 
-	RTVec3D const operator[](int i)
+	// Helper function to extract a 3D vector from the matrix.
+	RTVec3D const operator[](int i) const
 	{
-		if (i > 2) {
-			return RTVec3D{ 0.f, 0.f, 0.f };
-		}
-
-		return { *reinterpret_cast<RTVec3D*>(n[i]) };
+		return RTVec3D{ n[i][0], n[i][1], n[i][2] };
 	}
 
 	// Helper function to get an element from the matrix in row major order, i is the row and j the column.
-	float const operator()(int i, int j)
+	float const operator()(int i, int j) const
 	{
 		return (n[i][j]);
 	}

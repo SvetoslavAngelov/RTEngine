@@ -1,5 +1,6 @@
 #pragma once
 
+#include <wrl.h>
 #include <memory>
 #include <string>
 
@@ -30,6 +31,19 @@ public:
 	virtual void OnUpdate(); 
 	virtual void OnRender(); 
 
+	// Raytracing pipeline.
+	void CreateDeviceDependentResources();
+
+	void CreateRaytracingInterfaces(); 
+	void CreateGlobalRootSignature();
+	void CreateLocalRootSignature();
+	void CreateRaytracingPipelineStateObject();
+	void CreateDescriptorHeap();
+	void BuildGeometry();
+	void BuildAccelerationStructures();
+	void BuildShaderTables();
+	void CreateRaytracingOutputResource();
+
 	// Accessors. 
 	UINT GetViewportWidth() const { return width; }
 	UINT GetViewportHeight() const { return height; }
@@ -37,17 +51,24 @@ public:
 
 protected: 
 	// Viewport dimensions. 
-	UINT										width; 
-	UINT										height; 
-	float										aspectRatio;
+	UINT												width; 
+	UINT												height; 
+	float												aspectRatio;
 
 	// Window bounds. 
-	Rect										windowBounds;
-
+	Rect												windowBounds;
+		
 	// D3D device resources.
-	std::unique_ptr<class RTDeviceResources>	deviceResources;
+	std::unique_ptr<class RTDeviceResources>			deviceResources;
+	Microsoft::WRL::ComPtr<ID3D12Device5>				raytracingDevice;
+	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList4>	raytracingCommanList;
+	Microsoft::WRL::ComPtr<ID3D12StateObject>			raytracingStateObject;
+
+	// Root signatures
+	Microsoft::WRL::ComPtr<ID3D12RootSignature>			raytracingGlobalRootSignature;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature>			raytracingLocalRootSignature;
 
 private:
-	std::wstring								windowTitle;
+	std::wstring										windowTitle;
 };
 

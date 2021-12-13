@@ -25,34 +25,6 @@ struct RTVec3D {
 		return (x == 0.f && y == 0.f && z == 0.f);
 	}
 
-	// Returns the dot product between two 3D vectors. 
-	static float DotProduct(RTVec3D const& a, RTVec3D const& b)
-	{
-		return { a.x * b.x + a.y * b.y + a.z * b.z };
-	}
-
-	// Retruns the cross product between two 3D vectors. 
-	static RTVec3D CrossProduct(RTVec3D const& a, RTVec3D const& b)
-	{
-		return {
-			a.y * b.z - a.z * b.y,
-			a.z * b.x - a.x * b.z,
-			a.x * b.y - a.y * b.x
-		};
-	}
-
-	// Returns a new 3D vector which is a projection of vector a onto vector b.
-	static RTVec3D Projection(RTVec3D const& a, RTVec3D const& b)
-	{
-		return { b * (DotProduct(a,b) / DotProduct(b,b)) };
-	}
-
-	// Returns a new 3D vector which is a rejection of vector a from b and is perpendicular to b. 
-	static RTVec3D Rejection(RTVec3D const& a, RTVec3D const& b)
-	{
-		return { (a - b) * (DotProduct(a,b) / DotProduct(b,b)) };
-	}
-
 	// Returns the magnitude, or length, of the vector.
 	float Magnitude() const
 	{

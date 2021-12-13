@@ -59,8 +59,9 @@ public:
 
 	// Private member accessors. 
 	
-	ID3D12GraphicsCommandList*		GetCommandList() const { return commandList.Get(); }
-	ID3D12Resource*					GetRenderTarget() const { return renderTargets[backBufferIndex].Get(); }
+	ID3D12GraphicsCommandList*				GetCommandList() const { return commandList.Get(); }
+	ID3D12Resource*							GetRenderTarget() const { return renderTargets[backBufferIndex].Get(); }
+	Microsoft::WRL::ComPtr<ID3D12Device>	GetD3DDevice() const { return d3dDevice; }
 
 	struct CD3DX12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() const; 
 

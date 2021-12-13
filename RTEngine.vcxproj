@@ -155,9 +155,11 @@
     <ClInclude Include="DirectXRHI\stdafx.h" />
     <ClInclude Include="Math\RTMath.h" />
     <ClInclude Include="Math\RTMatrix3D.h" />
+    <ClInclude Include="Math\RTMatrix4D.h" />
     <ClInclude Include="Math\RTNormal3D.h" />
     <ClInclude Include="Math\RTPoint2D.h" />
     <ClInclude Include="Math\RTPoint3D.h" />
+    <ClInclude Include="Math\RTRay.h" />
     <ClInclude Include="Math\RTVec2D.h" />
     <ClInclude Include="Math\RTVec3D.h" />
   </ItemGroup>

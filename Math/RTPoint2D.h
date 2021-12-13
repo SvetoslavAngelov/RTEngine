@@ -55,11 +55,9 @@ struct RTPoint2D
     */
 
     // Adding a vector to a point offsets the point in a given direction, resulting in a new point in space.
-    RTPoint2D const& operator +(RTVec2D const& v)
+    RTPoint2D operator +(RTVec2D const& v) const
     {
-        x += v.x;
-        y += v.y;
-        return *this;
+        return RTPoint2D{ x + v.x, y + v.y };
     }
 
     // Substracting two points returns the vector between them. 
@@ -87,19 +85,15 @@ struct RTPoint2D
     /*
         Scalar multiplication and division
     */
-    RTPoint2D const& operator *(float s)
+    RTPoint2D operator *(float s) const
     {
-        x *= s;
-        y *= s;
-        return *this;
+        return RTPoint2D{ x * s, y * s };
     }
 
-    RTPoint2D const& operator /(float s)
+    RTPoint2D operator /(float s) const
     {
         s = 1 / s;
-        x *= s;
-        y *= s;
-        return *this;
+        return RTPoint2D{ x * s, y * s };
     }
 
     RTPoint2D const& operator *=(float s)
