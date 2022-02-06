@@ -1,10 +1,13 @@
 #pragma once
 
-#include "RTVec3D.h"
+#include "RTVector3D.h"
 #include "RTPoint3D.h"
 #include <limits>
 
 struct RTRay {
+
+    using RTVec3D = RTVector3D::RTVec3DImpl;
+    using RTPoint3D = RTPoint3D::RTPoint3DImpl;
 
     // Default constructor, which initialises the Ray with length of infinity.
     RTRay() :
@@ -47,5 +50,4 @@ struct RTRay {
     // The maximum length of the ray.
     // Used to determine the last possible intersection point.
     float length;
-
 };

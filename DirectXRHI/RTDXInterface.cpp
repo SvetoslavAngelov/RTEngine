@@ -89,7 +89,7 @@ void RTDXInterface::CreateGlobalRootSignature()
 	Microsoft::WRL::ComPtr<ID3DBlob> serialisedRootSignature; 
 	Microsoft::WRL::ComPtr<ID3DBlob> errorMessage; 
 
-	ThrowIfFailed(D3D12SerializeRootSignature(&globalRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serialisedRootSignature, &errorMessage)),
+	ThrowIfFailed(D3D12SerializeRootSignature(&globalRootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serialisedRootSignature, &errorMessage),
 		errorMessage ? static_cast<wchar_t*>(errorMessage->GetBufferPointer()) : nullptr);
 
 	ThrowIfFailed(device->CreateRootSignature(1, serialisedRootSignature->GetBufferPointer(), serialisedRootSignature->GetBufferSize(), 
