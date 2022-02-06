@@ -47,13 +47,13 @@
     <ClInclude Include="DirectXRHI\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Math\RTVec3D.h">
+    <ClInclude Include="Math\RTVector3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Math\RTMatrix3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Math\RTVec2D.h">
+    <ClInclude Include="Math\RTVector2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Math\RTPoint2D.h">

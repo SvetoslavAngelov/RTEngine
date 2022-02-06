@@ -160,8 +160,8 @@
     <ClInclude Include="Math\RTPoint2D.h" />
     <ClInclude Include="Math\RTPoint3D.h" />
     <ClInclude Include="Math\RTRay.h" />
-    <ClInclude Include="Math\RTVec2D.h" />
-    <ClInclude Include="Math\RTVec3D.h" />
+    <ClInclude Include="Math\RTVector2D.h" />
+    <ClInclude Include="Math\RTVector3D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
