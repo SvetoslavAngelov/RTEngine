@@ -17,5 +17,3 @@ using Normal3D = RTNormal3D::RTNormal3DImpl;
 using Ray = RTRay;
 using Matrix3D = RTMatrix3D::RTMatrix3DImpl;
 using Matrix4D = RTMatrix4D::RTMatrix4DImpl;
-
-

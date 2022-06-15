@@ -11,6 +11,14 @@
 	Source: https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Desktop/D3D12Raytracing/
 */
 
+enum GlobalRootSignatureParams {
+	OutputViewSlot = 0, 
+	ConstantBufferSlot,
+	AccelerationStructureSlot,
+	VertexBufferSlot,
+	Count
+};
+
 struct Rect {
 	long left;
 	long top;
@@ -37,7 +45,6 @@ public:
 
 	void CreateRaytracingInterfaces(); 
 	void CreateGlobalRootSignature();
-	void CreateLocalRootSignature();
 	void CreateRaytracingPipelineStateObject();
 	void CreateDescriptorHeap();
 	void BuildGeometry();
@@ -67,7 +74,6 @@ protected:
 
 	// Root signatures
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>			raytracingGlobalRootSignature;
-	Microsoft::WRL::ComPtr<ID3D12RootSignature>			raytracingLocalRootSignature;
 
 private:
 	std::wstring										windowTitle;

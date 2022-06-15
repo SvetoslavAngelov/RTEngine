@@ -4,7 +4,7 @@
 #include <array>
 #include "d3dx12.h"
 
-RTDeviceResources::RTDeviceResources(DXGI_FORMAT backBufferFormat, UINT backBufferCount)	:
+RTDeviceResources::RTDeviceResources(DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthBufferFormat, UINT backBufferCount, D3D_FEATURE_LEVEL minFeatureLevel)	:
 	backBufferIndex{ 0 },
 	fenceValues{},
 	rtvDescriptorHeap{ nullptr },
@@ -12,12 +12,18 @@ RTDeviceResources::RTDeviceResources(DXGI_FORMAT backBufferFormat, UINT backBuff
 	screenViewport{ },
 	scissorRect{ },
 	backBufferFormat{ backBufferFormat },
+	depthBufferFormat{ depthBufferFormat },
 	backBufferCount{ backBufferCount },
-	d3dFeatureLevel{ D3D_FEATURE_LEVEL_11_0 }
+	d3dFeatureLevel{ minFeatureLevel }
 {
 	if (backBufferCount > MAX_BACK_BUFFER_COUNT)
 	{
 		throw std::out_of_range("ERROR: BackBufferCount too large");
+	}
+
+	if (d3dFeatureLevel < D3D_FEATURE_LEVEL_11_0)
+	{
+		throw std::out_of_range("ERROR: D3D feature level is too low. Minimum D3D feature level 11 required. ");
 	}
 }
 
@@ -167,7 +173,7 @@ void RTDeviceResources::CreateDeviceResources()
 
 	ThrowIfFailed(d3dDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue)));
 
-	// Create descriptor heaps for the render target views. 
+	// Create the render targer descriptor heap.
 	D3D12_DESCRIPTOR_HEAP_DESC rtvDescriptorHeapDesc = { };
 	rtvDescriptorHeapDesc.NumDescriptors = backBufferCount;
 	rtvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV; 
@@ -175,6 +181,18 @@ void RTDeviceResources::CreateDeviceResources()
 	ThrowIfFailed(d3dDevice->CreateDescriptorHeap(&rtvDescriptorHeapDesc, IID_PPV_ARGS(&rtvDescriptorHeap)));
 
 	rtvDescriptorSize = d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE::D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+	// Create the depth stencil descriptor heap.
+	if (depthBufferFormat != DXGI_FORMAT_UNKNOWN)
+	{
+		D3D12_DESCRIPTOR_HEAP_DESC dsvDescriptorHeapDesc = {};
+		dsvDescriptorHeapDesc.NumDescriptors = 1;
+		dsvDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+
+		ThrowIfFailed(d3dDevice->CreateDescriptorHeap(
+			&dsvDescriptorHeapDesc, IID_PPV_ARGS(&dsvDescriptorHeap)
+		));
+	}
 
 	// Create a command allocator for each back buffer that will be rendered to. 
 	for (UINT n = 0; n < backBufferCount; ++n)
@@ -268,7 +286,7 @@ void RTDeviceResources::CreateWindowSizeDependentResources()
 		dxgiFactory->MakeWindowAssociation(windowHandle, DXGI_MWA_NO_ALT_ENTER);
 	}
 
-	// Obtain the back buffers for this window and create a render target view for each one of them. 
+	// Create a render target view resource perback buffer in the pre-allocated RTV descriptor heap.
 	for (UINT n = 0; n < backBufferCount; ++n)
 	{
 		ThrowIfFailed(swapChain->GetBuffer(n, IID_PPV_ARGS(&renderTargets[n])));
@@ -288,7 +306,46 @@ void RTDeviceResources::CreateWindowSizeDependentResources()
 	// Reset the index to the current back buffer.
 	backBufferIndex = swapChain->GetCurrentBackBufferIndex();
 
-	// TODO Depth buffer set up. 
+	// Set the depth buffer. 
+	if (depthBufferFormat != DXGI_FORMAT_UNKNOWN)
+	{
+		// Allocate a 2D surface as the depth stencil bugger and create a depth stencil view on it.
+		CD3DX12_HEAP_PROPERTIES depthHeapProperties(D3D12_HEAP_TYPE_DEFAULT);
+
+		D3D12_RESOURCE_DESC depthStencilDesc = CD3DX12_RESOURCE_DESC::Tex2D(
+			depthBufferFormat,
+			backBufferWidth,
+			backBufferHeight,
+			1,	// Single depth stencil texture. 
+			1	// Mipmap level 1. 
+		);
+
+		depthStencilDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+		D3D12_CLEAR_VALUE depthOptimisedClearView = {};
+		depthOptimisedClearView.Format = depthBufferFormat;
+		depthOptimisedClearView.DepthStencil.Depth = 1.0f;
+		depthOptimisedClearView.DepthStencil.Stencil = 0;
+
+		ThrowIfFailed(d3dDevice->CreateCommittedResource(
+			&depthHeapProperties,
+			D3D12_HEAP_FLAGS::D3D12_HEAP_FLAG_NONE,
+			&depthStencilDesc,
+			D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_DEPTH_WRITE,
+			&depthOptimisedClearView,
+			IID_PPV_ARGS(&depthStencil)
+		));
+
+		depthStencil->SetName(L"Depth Stencil");
+
+		D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+		dsvDesc.Format = depthBufferFormat;
+		dsvDesc.ViewDimension = D3D12_DSV_DIMENSION::D3D12_DSV_DIMENSION_TEXTURE2D;
+
+		d3dDevice->CreateDepthStencilView(depthStencil.Get(), 
+			&dsvDesc, 
+			dsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	}
 
 	// Set the 3D rendering viewport and scissor rectangle to target the entire window. 
 	screenViewport.TopLeftX = screenViewport.TopLeftY = 0.f; 

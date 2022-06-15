@@ -24,8 +24,11 @@ void RTDXInterface::OnInit()
 		deviceResources->CreateDeviceResources(); 
 		deviceResources->CreateWindowSizeDependentResources();
 	
-		//	TODO
-		//  Build the raytracing pipeline.
+		// Initialise the scene
+		// TODO
+
+		// Build the raytracing pipeline.
+		CreateDeviceDependentResources();
 	}
 }
 
@@ -33,22 +36,19 @@ void RTDXInterface::CreateDeviceDependentResources()
 {
 	// Build the raytracing pipeline.
 
-	// Create the raytracing device and command list. 
+	// Query the instanciated device object and assign the raytracing device and command list, if ray tracing is supported.
 	CreateRaytracingInterfaces(); 
 
-	// Creat global root signatures for the shaders. 
+	// Create the global root signature used by the shaders. 
 	CreateGlobalRootSignature(); 
 
-	// Creat global root signatures for the shaders. 
-	CreateLocalRootSignature();
-
-	//	Create a raytracing pipeline state object which defines the binding of shaders, state and resources to be used during raytracing. 
+	// Create a raytracing pipeline state object which defines the binding of shaders, state and resources to be used during raytracing. 
 	CreateRaytracingPipelineStateObject();
 
-	// Create a heap for the descriptor resources. 
+	// Allocate GPU memory for the descriptor resources. 
 	CreateDescriptorHeap(); 
 
-	// Buil the geometry. 
+	// Build the geometry. 
 	BuildGeometry();
 
 	// Build raytracing acceleration structures from the generated geometry. 
@@ -72,19 +72,38 @@ void RTDXInterface::CreateRaytracingInterfaces()
 
 void RTDXInterface::CreateGlobalRootSignature()
 {
-	CD3DX12_DESCRIPTOR_RANGE UAVDescriptor;
-	UAVDescriptor.Init(D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 1, 0);
-	
-	CD3DX12_ROOT_PARAMETER rootParameters[2];
+	// Global root parameters, which are shared between all shaders.
+	//	- Unordered Access View (UAV) descriptor for the ray tracing output, stored as texture.
+	//  - Constant Buffer View (CBC) desriptor for the scene transform data (MVP matrix). 
+	//  - Shader Resource View (SRV) descritors for the
+	//		- Acceleration structure
+	//		- Vertex buffer
+	//		- Index buffer
 
-	// Output view slot 
-	rootParameters[0].InitAsDescriptorTable(1, &UAVDescriptor);
+	CD3DX12_ROOT_PARAMETER rootParameters[GlobalRootSignatureParams::Count];
+
+	// Output view slot
+	// The ray tracing result stored as a UAV resource is bound to :register (u0, space0)
+	rootParameters[GlobalRootSignatureParams::OutputViewSlot].InitAsUnorderedAccessView(0);
+
+	// Constant buffer slot
+	// The constant buffer stored as CBV resource is bound to :register (b0, space0)
+	rootParameters[GlobalRootSignatureParams::ConstantBufferSlot].InitAsConstantBufferView(0);
 
 	// Acceleration structure slot
-	rootParameters[1].InitAsShaderResourceView(0);
+	// The acceleration structure stored as SRV resource is bound to :register (t0, space0)
+	rootParameters[GlobalRootSignatureParams::AccelerationStructureSlot].InitAsShaderResourceView(0);
 
-	CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(2, rootParameters);
+	// Vertex & Index buffer slot
+	// The SRVs are bound to :register (t1, space0) and :register (t2, space0)
+	CD3DX12_DESCRIPTOR_RANGE VertexBufferDescriptor;
+	VertexBufferDescriptor.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 1);
+	rootParameters[GlobalRootSignatureParams::VertexBufferSlot].InitAsDescriptorTable(1, &VertexBufferDescriptor);
 
+	// Create the global root signature with the list of descriptor tables as parameters. 
+	CD3DX12_ROOT_SIGNATURE_DESC globalRootSignatureDesc(GlobalRootSignatureParams::Count, rootParameters);
+
+	// Serialise and create the global root signature
 	Microsoft::WRL::ComPtr<ID3D12Device> device = deviceResources->GetD3DDevice();
 	Microsoft::WRL::ComPtr<ID3DBlob> serialisedRootSignature; 
 	Microsoft::WRL::ComPtr<ID3DBlob> errorMessage; 
@@ -96,14 +115,29 @@ void RTDXInterface::CreateGlobalRootSignature()
 		IID_PPV_ARGS(&raytracingGlobalRootSignature)));
 }
 
-void RTDXInterface::CreateLocalRootSignature()
-{
-
-}
-
-
 void RTDXInterface::CreateRaytracingPipelineStateObject()
 {
+	// A state object represents a variable amount of configuration state, 
+	// including shaders, that an application manages as a single unit and 
+	// which is given to a driver atomically to process (e.g. compile/optimize)
+    // however it sees fit. A state object is created via CreateStateObject() on a D3D12 device.
+
+	// The Pipeline State Object here is built using six subobjects:
+	// - DXIL library
+    // - Triangle hit group
+    // - Shader config
+    // - Global root signature
+    // - Pipeline config
+
+	CD3DX12_STATE_OBJECT_DESC raytracingPipeline{ D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE };
+
+	// DXIL library 
+	// Shaders cannot be passed as subobjects into the raytracing pipeline. 
+	// To add shaders into a state object, they must be put in a containing 
+	// DXIL library, which is then passe into the pipeline state object. 
+	
+	CD3DX12_DXIL_LIBRARY_SUBOBJECT* dxShaderLib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
+	//D3D12_SHADER_BYTECODE dxilLib = CD3DX12_SHADER_BYTECODE((void*)g_pRaytracing)
 
 }
 
