@@ -20,7 +20,9 @@ public:
 	// Default constructor.
 	RTDeviceResources(
 		DXGI_FORMAT backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM,
-		UINT backBufferCount = 3);
+		DXGI_FORMAT depthBufferFormat = DXGI_FORMAT_D32_FLOAT,
+		UINT backBufferCount = 3,
+		D3D_FEATURE_LEVEL minFeatureLevel = D3D_FEATURE_LEVEL_11_0);
 
 	~RTDeviceResources();
 
@@ -78,6 +80,7 @@ private:
 	Microsoft::WRL::ComPtr<IDXGIFactory4>				dxgiFactory; 
 	Microsoft::WRL::ComPtr<IDXGISwapChain3>				swapChain; 
 	Microsoft::WRL::ComPtr<ID3D12Resource>				renderTargets[MAX_BACK_BUFFER_COUNT]; 
+	Microsoft::WRL::ComPtr<ID3D12Resource>				depthStencil;
 
 	// Fence objects for CPU<->GPU synchronisation. 
 	Microsoft::WRL::ComPtr<ID3D12Fence>					fence;
@@ -86,12 +89,14 @@ private:
 
 	// Direct3D rendering objects. 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>		rtvDescriptorHeap;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>		dsvDescriptorHeap;
 	UINT												rtvDescriptorSize;
 	D3D12_VIEWPORT										screenViewport; 
 	D3D12_RECT											scissorRect;
 
 	// Direct3D properties. 
-	DXGI_FORMAT											backBufferFormat; 
+	DXGI_FORMAT											backBufferFormat;
+	DXGI_FORMAT											depthBufferFormat;
 	UINT												backBufferCount; 
 
 	// Cached device properties 

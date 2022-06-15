@@ -74,5 +74,14 @@
     <ClInclude Include="Math\RTMatrix4D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shaders\RTSceneResources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="App\StepTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders\RayGeneration.hlsl" />
   </ItemGroup>
 </Project>

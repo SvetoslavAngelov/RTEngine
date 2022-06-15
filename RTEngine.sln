@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RTEngine", "RTEngine.vcxproj", "{4D1A4E95-B9DB-49A8-86AF-455735383D68}"
 EndProject
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {FD396EC4-EAC2-4A1C-8E10-BB00DD5F04F1}
+		SolutionGuid = {90B99D5C-9A43-4AD7-BD6C-934AFD71B29D}
 	EndGlobalSection
 EndGlobal
