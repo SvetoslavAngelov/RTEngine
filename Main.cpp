@@ -1,6 +1,5 @@
 #include "DirectXRHI/RTDXInterface.h"
 #include "DirectXRHI/RTWinApp.h"
-#include "Math/RTMath.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
 {
