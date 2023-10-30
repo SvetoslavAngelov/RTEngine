@@ -77,5 +77,22 @@ protected:
 
 private:
 	std::wstring										windowTitle;
+
+	// Shader tables 
+	static const wchar_t*								c_rayGenShaderName; 
+	static const wchar_t*								c_closestHitShaderName; 
+	static const wchar_t*								c_missShaderName;
+
+	static const wchar_t*								c_hitGroupName;
+
+	// Descriptors 
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>		descriptorHeap;
+	UINT												descriptorsAllocated;
+	UINT												descriptorSize;
+
+	// Raytracing output 
+	Microsoft::WRL::ComPtr<ID3D12Resource>				raytracingOutput;
+	D3D12_GPU_DESCRIPTOR_HANDLE							raytracingOutputResourceUAVGpuDescriptor;
+	UINT												raytracingOutputResourceUAVDescriptorHeapIndex;
 };
 

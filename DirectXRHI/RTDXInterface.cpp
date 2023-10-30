@@ -2,6 +2,16 @@
 #include "RTDeviceResources.h"
 #include "RTWinApp.h"
 #include "HrException.h"
+#include "../Math/RTMath.h"
+#include "../Shaders/CompiledShaders/RayGen.hlsl.h"
+#include "../Shaders/CompiledShaders/Hit.hlsl.h"
+#include "../Shaders/CompiledShaders/Miss.hlsl.h"
+
+const wchar_t* RTDXInterface::c_rayGenShaderName = L"RayGen";
+const wchar_t* RTDXInterface::c_closestHitShaderName = L"ClosestHit";
+const wchar_t* RTDXInterface::c_missShaderName = L"Miss";
+const wchar_t* RTDXInterface::c_hitGroupName = L"HitGroup";
+
 
 RTDXInterface::RTDXInterface(UINT viewportWidth, UINT viewportHeight, std::wstring windowName) :
 	width { viewportWidth },
@@ -131,39 +141,117 @@ void RTDXInterface::CreateRaytracingPipelineStateObject()
 
 	CD3DX12_STATE_OBJECT_DESC raytracingPipeline{ D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE };
 
-	// DXIL library 
-	// Shaders cannot be passed as subobjects into the raytracing pipeline. 
-	// To add shaders into a state object, they must be put in a containing 
-	// DXIL library, which is then passe into the pipeline state object. 
-	
-	CD3DX12_DXIL_LIBRARY_SUBOBJECT* dxShaderLib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
-	//D3D12_SHADER_BYTECODE dxilLib = CD3DX12_SHADER_BYTECODE((void*)g_pRaytracing)
+	// DXIL libraries 
+	D3D12_SHADER_BYTECODE rayGenDXIL = CD3DX12_SHADER_BYTECODE((void*)g_pRayGen, ARRAYSIZE(g_pRayGen));
+	D3D12_SHADER_BYTECODE closestHitDXIL = CD3DX12_SHADER_BYTECODE((void*)g_pHit, ARRAYSIZE(g_pHit));
+	D3D12_SHADER_BYTECODE missDXIL = CD3DX12_SHADER_BYTECODE((void*)g_pMiss, ARRAYSIZE(g_pMiss));
 
+	// Raygen library
+	auto rayGenLib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
+	rayGenLib->SetDXILLibrary(&rayGenDXIL);
+	rayGenLib->DefineExport(c_rayGenShaderName);
+
+	// Closest hit library
+	auto closestHitLib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
+	closestHitLib->SetDXILLibrary(&closestHitDXIL);
+	closestHitLib->DefineExport(c_closestHitShaderName);
+
+	// Miss library 
+	auto missLib = raytracingPipeline.CreateSubobject<CD3DX12_DXIL_LIBRARY_SUBOBJECT>();
+	missLib->SetDXILLibrary(&missDXIL);
+	missLib->DefineExport(c_missShaderName);
+
+	// Triangle hit group 
+	auto hitGroup = raytracingPipeline.CreateSubobject<CD3DX12_HIT_GROUP_SUBOBJECT>();
+	hitGroup->SetClosestHitShaderImport(c_closestHitShaderName);
+	hitGroup->SetHitGroupExport(c_hitGroupName);
+	hitGroup->SetHitGroupType(D3D12_HIT_GROUP_TYPE_TRIANGLES);
+
+	// Shader config
+	auto shaderConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT>();
+	using Vec2D = RTVector2D::RTVec2DImpl;
+	using Vec4D = RTVector4D;
+	
+	UINT rayPayloadSize = sizeof(Vec4D);
+	UINT attributeSize = sizeof(Vec2D);
+	shaderConfig->Config(rayPayloadSize, attributeSize);
+
+	// Global root signature
+	auto globalRootSignature = raytracingPipeline.CreateSubobject<CD3DX12_GLOBAL_ROOT_SIGNATURE_SUBOBJECT>();
+	globalRootSignature->SetRootSignature(raytracingGlobalRootSignature.Get());
+
+	// Pipeline config
+	auto pipelineConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_PIPELINE_CONFIG_SUBOBJECT>();
+	
+	// Use primary rays only
+	UINT maxRecursionDepth = 1; 
+	pipelineConfig->Config(maxRecursionDepth);
+
+	// Create the state object 
+	ThrowIfFailed(raytracingDevice->CreateStateObject(raytracingPipeline, IID_PPV_ARGS(&raytracingStateObject)), L"Couldn't create a DirectX Raytracing state object.\n");
 }
 
 void RTDXInterface::CreateDescriptorHeap()
 {
+	auto device = deviceResources->GetD3DDevice();
 
+	D3D12_DESCRIPTOR_HEAP_DESC descriptorHeapDesc = {};
+
+	// Allocate a heap for 3 descriptors: 
+	// 2 - vertex and index buffer SRVs
+	// 1 - raytracing output texture UAV
+	descriptorHeapDesc.NumDescriptors = 3; 
+	descriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	descriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	descriptorHeapDesc.NodeMask = 0;
+	device->CreateDescriptorHeap(&descriptorHeapDesc, IID_PPV_ARGS(&descriptorHeap));
+	
+	descriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
 
 void RTDXInterface::BuildGeometry()
 {
-
+	// TODO 
 }
 
 void RTDXInterface::BuildAccelerationStructures()
 {
-
+	// TODO 
 }
 
 void RTDXInterface::BuildShaderTables()
 {
+	auto device = deviceResources->GetD3DDevice();
 
+	void* rayGenShaderIdentifier = nullptr;
+	void* missShaderIdentifier = nullptr; 
+	void* hitGroupShaderIdentifier = nullptr; 
+
+	auto GetShaderIdentifiers = [&](auto* stateObjectProperties)
+		{
+			rayGenShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_rayGenShaderName);
+			missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_missShaderName);
+			hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_hitGroupName);
+		};
 }
 
 void RTDXInterface::CreateRaytracingOutputResource()
 {
+	auto commandList = deviceResources->GetCommandList();
+	auto renderTarget = deviceResources->GetRenderTarget();
 
+	D3D12_RESOURCE_BARRIER preCopyBarriers[2];
+	preCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(renderTarget, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_DEST);
+	preCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(raytracingOutput.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE);
+	commandList->ResourceBarrier(ARRAYSIZE(preCopyBarriers), preCopyBarriers);
+
+	commandList->CopyResource(renderTarget, raytracingOutput.Get());
+
+	D3D12_RESOURCE_BARRIER postCopyBarriers[2];
+	postCopyBarriers[0] = CD3DX12_RESOURCE_BARRIER::Transition(renderTarget, D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PRESENT);
+	postCopyBarriers[1] = CD3DX12_RESOURCE_BARRIER::Transition(raytracingOutput.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
+
+	commandList->ResourceBarrier(ARRAYSIZE(postCopyBarriers), postCopyBarriers);
 }
 
 void RTDXInterface::OnUpdate()

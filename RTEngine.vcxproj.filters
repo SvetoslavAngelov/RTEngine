@@ -80,5 +80,23 @@
     <ClInclude Include="App\StepTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shaders\CompiledShaders\RayGen.hlsl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\CompiledShaders\Miss.hlsl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\CompiledShaders\Hit.hlsl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders\CompiledShaders\Common.hlsl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\RTVector4D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXRHI\RTHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
