@@ -2,6 +2,7 @@
 #include "RTDeviceResources.h"
 #include "RTWinApp.h"
 #include "HrException.h"
+#include "RTHelper.h"
 #include "../Math/RTMath.h"
 #include "../Shaders/CompiledShaders/RayGen.hlsl.h"
 #include "../Shaders/CompiledShaders/Hit.hlsl.h"
@@ -233,6 +234,36 @@ void RTDXInterface::BuildShaderTables()
 			missShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_missShaderName);
 			hitGroupShaderIdentifier = stateObjectProperties->GetShaderIdentifier(c_hitGroupName);
 		};
+
+	// Get shader identifiers
+	UINT shaderIdentifierSize;
+	{
+		Microsoft::WRL::ComPtr<ID3D12StateObjectProperties> stateObjectProperties;
+		ThrowIfFailed(raytracingStateObject.As(&stateObjectProperties));
+		GetShaderIdentifiers(stateObjectProperties.Get());
+		shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+	}
+	
+	// Ray gen shader table 
+	{
+		UINT numShaderRecords = 1; 
+		UINT shaderRecordSize = shaderIdentifierSize;
+		ShaderTable rayGenShaderTable(device, numShaderRecords, shaderRecordSize, L"RayGenShaderTable");
+		rayGenShaderTable.push_back(ShaderRecord(rayGenShaderIdentifier, shaderIdentifierSize));
+		m_rayGenShaderTable = rayGenShaderTable.GetResource();
+	}
+
+	// Miss shader table 
+	{
+		UINT numShaderRecords = 1; 
+		UINT shaderRecordSize = shaderIdentifierSize;
+		ShaderTable missShaderTable(device, numShaderRecords, shaderRecordSize, L"MissShaderTable");
+		missShaderTable.push_back(ShaderRecord(rayGenShaderIdentifier, shaderIdentifierSize));
+		m_missShaderTable = missShaderTable.GetResource();
+	}
+
+	// Hit group shader table 
+	// TODO 
 }
 
 void RTDXInterface::CreateRaytracingOutputResource()
@@ -259,17 +290,63 @@ void RTDXInterface::OnUpdate()
 	// TODO Tick().
 }
 
+void RTDXInterface::DoRayTracing()
+{
+	auto commandList = deviceResources->GetCommandList();
+	auto frameIndex = deviceResources->GetCurrentFrameIndex();
+
+	auto DispatchRays = [&](auto* commandList, auto* stateObject, auto* dispatchDesc)
+		{
+			// Each shader table has only one shader record, the stride is the same
+			dispatchDesc->RayGenerationShaderRecord.StartAddress = m_rayGenShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->RayGenerationShaderRecord.SizeInBytes = m_rayGenShaderTable->GetDesc().Width;
+
+			dispatchDesc->MissShaderTable.StartAddress = m_missShaderTable->GetGPUVirtualAddress();
+			dispatchDesc->MissShaderTable.SizeInBytes = m_missShaderTable->GetDesc().Width;
+			dispatchDesc->MissShaderTable.StrideInBytes = dispatchDesc->MissShaderTable.SizeInBytes;
+
+			dispatchDesc->Width = width;
+			dispatchDesc->Height = height;
+			dispatchDesc->Depth = 1;
+
+			commandList->SetPipelineState1(stateObject);
+			commandList->DispatchRays(dispatchDesc);
+		};
+
+	auto SetCommonPipelineState = [&](auto* descriptorSetCommandList)
+		{
+			descriptorSetCommandList->SetDescriptorHeaps(1, descriptorHeap.GetAddressOf());
+
+			// Set index and vertex buffer descriptor tables
+			// TODO
+		};
+
+	commandList->SetComputeRootSignature(raytracingGlobalRootSignature.Get());
+
+	// Copy the updated scene constant buffer to GPU
+	// TODO 
+
+	// Bind the heaps, acceleration structure and dispatch rays
+	D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
+	SetCommonPipelineState(commandList);
+	// commandList->SetComputeRootShaderResourceView(GlobalRootSignatureParams::AccelerationStructureSlot, topLevelAccelerationStructure->GetGPUVirtualAddress());
+	DispatchRays(raytracingCommanList.Get(), raytracingStateObject.Get(), &dispatchDesc);
+}
+
 void RTDXInterface::OnRender()
 {
 	deviceResources->Prepare(); 
 
 	// Populate command list.
-	float const clearColour[] = { 0.f, 0.4f, 0.4f, 1.0f };
+	/*float const clearColour[] = {0.f, 0.4f, 0.4f, 1.0f};
 	auto commandList = deviceResources->GetCommandList();
 	auto rtvHandle = deviceResources->GetRenderTargetView(); 
-	commandList->ClearRenderTargetView(rtvHandle, clearColour, 0, nullptr);
+	commandList->ClearRenderTargetView(rtvHandle, clearColour, 0, nullptr);*/
 
-	deviceResources->Present();
+	DoRayTracing();
+	CreateRaytracingOutputResource();
+	
+	deviceResources->Present(D3D12_RESOURCE_STATE_PRESENT);
 }
 
 RTDXInterface::~RTDXInterface()

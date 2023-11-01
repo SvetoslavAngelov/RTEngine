@@ -73,7 +73,7 @@ protected:
         }
     }
 
-    void Allocate(ID3D12Device* device, UINT bufferSize, LPCWSTR resourceName = nullptr)
+    void Allocate(Microsoft::WRL::ComPtr<ID3D12Device> device, UINT bufferSize, LPCWSTR resourceName = nullptr)
     {
         auto uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 
@@ -110,7 +110,7 @@ class ShaderTable : public GpuUploadBuffer
 
     ShaderTable() {}
 public:
-    ShaderTable(ID3D12Device* device, UINT numShaderRecords, UINT shaderRecordSize, LPCWSTR resourceName = nullptr)
+    ShaderTable(Microsoft::WRL::ComPtr<ID3D12Device> device, UINT numShaderRecords, UINT shaderRecordSize, LPCWSTR resourceName = nullptr)
         : m_name(resourceName)
     {
         m_shaderRecordSize = Align(shaderRecordSize, D3D12_RAYTRACING_SHADER_RECORD_BYTE_ALIGNMENT);
