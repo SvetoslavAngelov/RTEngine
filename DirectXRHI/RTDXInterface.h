@@ -51,6 +51,7 @@ public:
 	void BuildAccelerationStructures();
 	void BuildShaderTables();
 	void CreateRaytracingOutputResource();
+	void DoRayTracing();
 
 	// Accessors. 
 	UINT GetViewportWidth() const { return width; }
@@ -82,8 +83,11 @@ private:
 	static const wchar_t*								c_rayGenShaderName; 
 	static const wchar_t*								c_closestHitShaderName; 
 	static const wchar_t*								c_missShaderName;
-
 	static const wchar_t*								c_hitGroupName;
+
+	Microsoft::WRL::ComPtr<ID3D12Resource>				m_rayGenShaderTable; 
+	Microsoft::WRL::ComPtr<ID3D12Resource>				m_missShaderTable; 
+	Microsoft::WRL::ComPtr<ID3D12Resource>				m_hitGroupShaderTable;
 
 	// Descriptors 
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>		descriptorHeap;

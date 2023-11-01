@@ -64,8 +64,9 @@ public:
 	ID3D12GraphicsCommandList*				GetCommandList() const { return commandList.Get(); }
 	ID3D12Resource*							GetRenderTarget() const { return renderTargets[backBufferIndex].Get(); }
 	Microsoft::WRL::ComPtr<ID3D12Device>	GetD3DDevice() const { return d3dDevice; }
+	UINT									GetCurrentFrameIndex() const { return backBufferIndex; }
 
-	struct CD3DX12_CPU_DESCRIPTOR_HANDLE GetRenderTargetView() const; 
+	struct CD3DX12_CPU_DESCRIPTOR_HANDLE	GetRenderTargetView() const; 
 
 private: 
 	// Direct3D objects. 
