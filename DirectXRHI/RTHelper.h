@@ -16,6 +16,12 @@
 #include <wrl.h>
 #include <unordered_map>
 
+struct D3DBuffer {
+    Microsoft::WRL::ComPtr<ID3D12Resource> resource; 
+    D3D12_CPU_DESCRIPTOR_HANDLE cpuDescriptorHandle; 
+    D3D12_GPU_DESCRIPTOR_HANDLE gpuDescriptorHandle;
+};
+
 inline UINT Align(UINT size, UINT alignment)
 {
     return (size + (alignment - 1)) & ~(alignment - 1);

@@ -2,8 +2,6 @@
 #include "RTDeviceResources.h"
 #include "RTWinApp.h"
 #include "HrException.h"
-#include "RTHelper.h"
-#include "../Math/RTMath.h"
 #include "../Shaders/CompiledShaders/RayGen.hlsl.h"
 #include "../Shaders/CompiledShaders/Hit.hlsl.h"
 #include "../Shaders/CompiledShaders/Miss.hlsl.h"
@@ -36,7 +34,14 @@ void RTDXInterface::OnInit()
 		deviceResources->CreateWindowSizeDependentResources();
 	
 		// Initialise the scene
-		// TODO
+		{
+			// Set up object colour
+			rtObject.colour = RTVector4D(1.f, 1.f, 1.f, 1.f);
+
+			// Set up scene 
+			
+
+		}
 
 		// Build the raytracing pipeline.
 		CreateDeviceDependentResources();
