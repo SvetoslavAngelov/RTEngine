@@ -4,6 +4,8 @@
 #include <d3d12.h>
 #include <memory>
 #include <string>
+#include "RTHelper.h"
+#include "../Scene/RTScene.h"
 
 /*
 	Base interface class between Direct3D 12 and the application.
@@ -77,6 +79,10 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D12RootSignature>			raytracingGlobalRootSignature;
 
 private:
+
+	// Frame count, must match the size of the back buffer
+	static const UINT									frameCount = 3;
+
 	std::wstring										windowTitle;
 
 	// Shader tables 
@@ -98,5 +104,13 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Resource>				raytracingOutput;
 	D3D12_GPU_DESCRIPTOR_HANDLE							raytracingOutputResourceUAVGpuDescriptor;
 	UINT												raytracingOutputResourceUAVDescriptorHeapIndex;
+
+	// Raytracing scene 
+	SceneConstantBuffer									rtScene[frameCount]; 
+	ObjectConstantBuffer								rtObject; 
+
+	// Geometry reference
+	D3DBuffer											indexBuffer;
+	D3DBuffer											vertexBuffer;
 };
 
