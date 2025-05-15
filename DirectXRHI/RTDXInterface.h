@@ -6,6 +6,7 @@
 #include <string>
 #include "RTHelper.h"
 #include "../Scene/RTScene.h"
+#include "../App/StepTimer.h"
 
 /*
 	Base interface class between Direct3D 12 and the application.
@@ -41,6 +42,9 @@ public:
 	virtual void OnInit(); 
 	virtual void OnUpdate(); 
 	virtual void OnRender(); 
+	
+	// Returns the timer for frame count and elapsed time tracking
+	StepTimer& GetTimer() { return timer; }
 
 	// Raytracing pipeline.
 	void CreateDeviceDependentResources();
@@ -112,5 +116,17 @@ private:
 	// Geometry reference
 	D3DBuffer											indexBuffer;
 	D3DBuffer											vertexBuffer;
+	
+	// Acceleration structures
+	Microsoft::WRL::ComPtr<ID3D12Resource>				bottomLevelAccelerationStructure;
+	Microsoft::WRL::ComPtr<ID3D12Resource>				topLevelAccelerationStructure;
+	
+	// GPU buffers to hold acceleration structure build data
+	Microsoft::WRL::ComPtr<ID3D12Resource>				bottomLevelAccelerationStructureScratch;
+	Microsoft::WRL::ComPtr<ID3D12Resource>				topLevelAccelerationStructureScratch;
+	Microsoft::WRL::ComPtr<ID3D12Resource>				instanceDescs;
+	
+	// Timer for animation and time-based effects
+	StepTimer 											timer;
 };
 
