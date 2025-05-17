@@ -19,9 +19,8 @@ RTDXInterface::RTDXInterface(UINT viewportWidth, UINT viewportHeight, std::wstri
 	windowBounds { 0, 0, static_cast<long>(viewportWidth), static_cast<long>(viewportHeight) },
 	windowTitle { windowName }
 {
-	// Initialize timer
 	timer.SetFixedTimeStep(true);
-	timer.SetTargetElapsedSeconds(1.0 / 60.0); // Target 60 FPS
+	timer.SetTargetElapsedSeconds(1.0 / 60.0); 
 }
 
 void RTDXInterface::OnInit()
@@ -37,28 +36,21 @@ void RTDXInterface::OnInit()
 	
 		// Initialise the scene
 		{
-			// Set up object colour
 			rtObject.colour = RTVector4D(1.f, 1.f, 1.f, 1.f);
 
-			// Set up scene constants
 			for (int i = 0; i < frameCount; i++)
 			{
-				// Set identity matrix
 				rtScene[i].projectionToWorld = RTMatrix4D::RTMatrix4DImpl();
 				
-				// Set camera position
 				rtScene[i].cameraPosition = RTVector4D(0.0f, 0.0f, -2.0f, 1.0f);
 				
-				// Set light position
 				rtScene[i].lightPosition = RTVector4D(0.0f, 1.0f, -2.0f, 1.0f);
 				
-				// Set light colors
 				rtScene[i].lightAmbientColour = RTVector4D(0.2f, 0.2f, 0.2f, 1.0f);
 				rtScene[i].lightDiffuseColour = RTVector4D(0.8f, 0.8f, 0.8f, 1.0f);
 			}
 		}
 
-		// Build the raytracing pipeline.
 		CreateDeviceDependentResources();
 	}
 }
@@ -246,11 +238,9 @@ void RTDXInterface::BuildGeometry()
 		{ RTVector3D::RTVec3DImpl(-0.5f, -0.5f, 0.0f), RTVector3D::RTVec3DImpl(0.0f, 0.0f, -1.0f) }
 	};
 
-	// Define indices for the triangle
 	std::vector<UINT> triangleIndices = { 0, 1, 2 };
 	UINT numIndices = static_cast<UINT>(triangleIndices.size());
 
-	// Create vertex buffer
 	const UINT vertexBufferSize = numVertices * sizeof(Vertex);
 
 	// Upload the vertex buffer to the GPU
@@ -401,6 +391,7 @@ void RTDXInterface::BuildAccelerationStructures()
 	
 	// Create instance descriptor
 	D3D12_RAYTRACING_INSTANCE_DESC instanceDesc = {};
+
 	// Identity matrix for transformation
 	instanceDesc.Transform[0][0] = 1.0f;
 	instanceDesc.Transform[1][1] = 1.0f;
@@ -600,29 +591,25 @@ void RTDXInterface::OnUpdate()
 	// Update timer
 	timer.Tick([&]()
 	{
-		// Calculate time-based values
 		float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 		float totalTime = static_cast<float>(timer.GetTotalSeconds());
 		
-		// --- Update scene for animation ---
-		
-		// Get the current frame index
+		// Update scene for animation
 		auto frameIndex = deviceResources->GetCurrentFrameIndex();
 		
 		// 1. Animate the light position in a circular pattern
 		float lightRadius = 3.0f;
-		float lightSpeed = 0.5f;  // Revolutions per second
+		float lightSpeed = 0.5f; 
 		float lightAngle = totalTime * lightSpeed * 2.0f * 3.14159f;
 		
 		rtScene[frameIndex].lightPosition = RTVector4D(
 			lightRadius * sinf(lightAngle),
-			1.0f + 0.5f * sinf(totalTime * 2.0f),  // Add some vertical movement
+			1.0f + 0.5f * sinf(totalTime * 2.0f), 
 			lightRadius * cosf(lightAngle),
 			1.0f
 		);
 		
 		// 2. Smoothly change light colors over time
-		// Create a subtle pulsing effect for the ambient light
 		float pulseAmount = 0.1f;
 		float pulseSpeed = 2.0f;
 		float pulseValue = 0.2f + pulseAmount * sinf(totalTime * pulseSpeed);
@@ -630,50 +617,11 @@ void RTDXInterface::OnUpdate()
 		rtScene[frameIndex].lightAmbientColour = RTVector4D(
 			pulseValue,
 			pulseValue,
-			pulseValue * 1.2f,  // Slightly blue tint
-			1.0f
-		);
-		
-		// 3. Gradually shift diffuse light color for visual interest
-		float colorCycleSpeed = 0.3f;
-		rtScene[frameIndex].lightDiffuseColour = RTVector4D(
-			0.7f + 0.3f * sinf(totalTime * colorCycleSpeed),
-			0.7f + 0.3f * sinf(totalTime * colorCycleSpeed + 2.0f),
-			0.7f + 0.3f * sinf(totalTime * colorCycleSpeed + 4.0f),
-			1.0f
-		);
-		
-		// 4. Optionally update camera position for simple camera movement
-		// Example: Small orbital movement
-		if (false) { // Disabled by default - enable when needed
-			float cameraRadius = 2.5f;
-			float cameraSpeed = 0.1f;  // Slower than light
-			float cameraAngle = totalTime * cameraSpeed * 2.0f * 3.14159f;
-			
-			rtScene[frameIndex].cameraPosition = RTVector4D(
-				cameraRadius * sinf(cameraAngle) * 0.5f,
-				0.5f * sinf(totalTime * 0.5f),  // Gentle up/down
-				-2.0f + cameraRadius * cosf(cameraAngle) * 0.5f,
-				1.0f
-			);
-			
-			// Update view matrix accordingly
-			// This would require more complex matrix calculation
-			// based on camera position and target
-		}
-		
-		// 5. Update object color for visual effect
-		// Cycle through different hues
-		float colorSpeed = 0.2f;
-		rtObject.colour = RTVector4D(
-			0.5f + 0.5f * sinf(totalTime * colorSpeed),
-			0.5f + 0.5f * sinf(totalTime * colorSpeed + 2.0f),
-			0.5f + 0.5f * sinf(totalTime * colorSpeed + 4.0f),
+			pulseValue * 1.2f,
 			1.0f
 		);
 		
 		// For debug/performance tracking
-		// You could output frame rate periodically
 		static int fpsCounter = 0;
 		fpsCounter++;
 		if (fpsCounter >= 60) {
@@ -763,7 +711,6 @@ void RTDXInterface::DoRayTracing()
 			sceneConstantBuffer->GetGPUVirtualAddress());
 	}
 
-	// Bind the heaps, acceleration structure and dispatch rays
 	D3D12_DISPATCH_RAYS_DESC dispatchDesc = {};
 	SetCommonPipelineState(commandList);
 	
@@ -772,7 +719,6 @@ void RTDXInterface::DoRayTracing()
 		GlobalRootSignatureParams::AccelerationStructureSlot, 
 		topLevelAccelerationStructure->GetGPUVirtualAddress());
 	
-	// Dispatch rays
 	DispatchRays(raytracingCommanList.Get(), raytracingStateObject.Get(), &dispatchDesc);
 }
 
@@ -783,7 +729,6 @@ void RTDXInterface::OnRender()
 	auto commandList = deviceResources->GetCommandList();
 	auto renderTarget = deviceResources->GetRenderTarget();
 
-	// Perform raytracing
 	DoRayTracing();
 	
 	// Copy raytracing output to the render target
