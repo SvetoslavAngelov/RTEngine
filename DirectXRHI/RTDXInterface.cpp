@@ -185,8 +185,8 @@ void RTDXInterface::CreateRaytracingPipelineStateObject()
 	using Vec2D = RTVector2D::RTVec2DImpl;
 	using Vec4D = RTVector4D;
 	
-	UINT rayPayloadSize = sizeof(Vec4D);
-	UINT attributeSize = sizeof(Vec2D);
+	UINT rayPayloadSize = sizeof(Vec4D); 
+	UINT attributeSize = sizeof(Vec2D); 
 	shaderConfig->Config(rayPayloadSize, attributeSize);
 
 	// Global root signature
