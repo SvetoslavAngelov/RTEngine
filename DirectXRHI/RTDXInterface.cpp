@@ -182,11 +182,9 @@ void RTDXInterface::CreateRaytracingPipelineStateObject()
 
 	// Shader config
 	auto shaderConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT>();
-	using Vec2D = RTVector2D::RTVec2DImpl;
-	using Vec4D = RTVector4D::RTVec4DImpl;
 	
-	UINT rayPayloadSize = sizeof(Vec4D);
-	UINT attributeSize = sizeof(Vec2D);
+	UINT rayPayloadSize = sizeof(RTVector4D::RTVec4DImpl);
+	UINT attributeSize = sizeof(RTVector2D::RTVec2DImpl);
 	shaderConfig->Config(rayPayloadSize, attributeSize);
 
 	// Global root signature

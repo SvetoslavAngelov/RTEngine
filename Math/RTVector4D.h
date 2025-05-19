@@ -39,7 +39,4 @@ namespace RTVector4D {
 		// Member variables
 		float x, y, z, w; 
 	};
-
-	// Convenience typedef for backward compatibility
-	typedef RTVec4DImpl RTVector4D;
 }
