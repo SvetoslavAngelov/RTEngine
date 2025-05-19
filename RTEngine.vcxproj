@@ -154,6 +154,15 @@
     <ClCompile Include="DirectXRHI\RTDXInterface.cpp" />
     <ClCompile Include="DirectXRHI\RTDeviceResources.cpp" />
     <ClCompile Include="DirectXRHI\RTWinApp.cpp" />
+    <ClCompile Include="Math\RTMatrix3D.cpp" />
+    <ClCompile Include="Math\RTMatrix4D.cpp" />
+    <ClCompile Include="Math\RTNormal3D.cpp" />
+    <ClCompile Include="Math\RTPoint2D.cpp" />
+    <ClCompile Include="Math\RTPoint3D.cpp" />
+    <ClCompile Include="Math\RTRay.cpp" />
+    <ClCompile Include="Math\RTVector2D.cpp" />
+    <ClCompile Include="Math\RTVector3D.cpp" />
+    <ClCompile Include="Math\RTVector4D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\StepTimer.h" />
