@@ -1,110 +1,113 @@
 #include "RTVector4D.h"
 #include <math.h>
 
-RTVector4D::RTVector4D(float a, float b, float c, float d) :
-    x{ a }, y{ b }, z{ c }, w{ d }
-{
-}
+namespace RTVector4D {
 
-RTVector4D::RTVector4D(RTVector4D const& v) :
-    x{ v.x }, y{ v.y }, z{ v.z }, w{ v.w }
-{
-}
+    RTVec4DImpl::RTVec4DImpl(float a, float b, float c, float d) :
+        x{ a }, y{ b }, z{ c }, w{ d }
+    {
+    }
 
-bool RTVector4D::isZeroVector() const
-{
-    return (x == 0.f && y == 0.f && z == 0.f && w == 0.f);
-}
+    RTVec4DImpl::RTVec4DImpl(RTVec4DImpl const& v) :
+        x{ v.x }, y{ v.y }, z{ v.z }, w{ v.w }
+    {
+    }
 
-float RTVector4D::Magnitude() const
-{
-    float s = (x * x) + (y * y) + (z * z) + (w * w);
-    return (float)sqrt(s);
-}
+    bool RTVec4DImpl::isZeroVector() const
+    {
+        return (x == 0.f && y == 0.f && z == 0.f && w == 0.f);
+    }
 
-RTVector4D RTVector4D::GetNormal() const
-{
-    return !isZeroVector() ? RTVector4D{ *this / this->Magnitude() } : RTVector4D{ 0.f, 0.f, 0.f, 0.f };
-}
+    float RTVec4DImpl::Magnitude() const
+    {
+        float s = (x * x) + (y * y) + (z * z) + (w * w);
+        return (float)sqrt(s);
+    }
 
-RTVector4D RTVector4D::GetUnsafeNormal() const
-{
-    return RTVector4D{ *this / this->Magnitude() };
-}
+    RTVec4DImpl RTVec4DImpl::GetNormal() const
+    {
+        return !isZeroVector() ? RTVec4DImpl{ *this / this->Magnitude() } : RTVec4DImpl{ 0.f, 0.f, 0.f, 0.f };
+    }
 
-float& RTVector4D::operator[] (int i)
-{
-    return ((&x)[i]);
-}
+    RTVec4DImpl RTVec4DImpl::GetUnsafeNormal() const
+    {
+        return RTVec4DImpl{ *this / this->Magnitude() };
+    }
 
-float const& RTVector4D::operator[] (int i) const
-{
-    return ((&x)[i]);
-}
+    float& RTVec4DImpl::operator[] (int i)
+    {
+        return ((&x)[i]);
+    }
 
-RTVector4D const& RTVector4D::operator =(RTVector4D const& v)
-{
-    x = v.x;
-    y = v.y;
-    z = v.z;
-    w = v.w;
-    return *this;
-}
+    float const& RTVec4DImpl::operator[] (int i) const
+    {
+        return ((&x)[i]);
+    }
 
-RTVector4D const& RTVector4D::operator *=(float s)
-{
-    x *= s;
-    y *= s;
-    z *= s;
-    w *= s;
-    return *this;
-}
+    RTVec4DImpl const& RTVec4DImpl::operator =(RTVec4DImpl const& v)
+    {
+        x = v.x;
+        y = v.y;
+        z = v.z;
+        w = v.w;
+        return *this;
+    }
 
-RTVector4D const& RTVector4D::operator /=(float s)
-{
-    s = 1.f / s;
-    x *= s;
-    y *= s;
-    z *= s;
-    w *= s;
-    return *this;
-}
+    RTVec4DImpl const& RTVec4DImpl::operator *=(float s)
+    {
+        x *= s;
+        y *= s;
+        z *= s;
+        w *= s;
+        return *this;
+    }
 
-RTVector4D RTVector4D::operator *(float s) const
-{
-    return { x * s, y * s, z * s, w * s };
-}
+    RTVec4DImpl const& RTVec4DImpl::operator /=(float s)
+    {
+        s = 1.f / s;
+        x *= s;
+        y *= s;
+        z *= s;
+        w *= s;
+        return *this;
+    }
 
-RTVector4D RTVector4D::operator /(float s) const
-{
-    s = 1.f / s;
-    return { x * s, y * s, z * s, w * s };
-}
+    RTVec4DImpl RTVec4DImpl::operator *(float s) const
+    {
+        return { x * s, y * s, z * s, w * s };
+    }
 
-RTVector4D& RTVector4D::operator +=(RTVector4D const& v)
-{
-    x += v.x;
-    y += v.y;
-    z += v.z;
-    w += v.w;
-    return (*this);
-}
+    RTVec4DImpl RTVec4DImpl::operator /(float s) const
+    {
+        s = 1.f / s;
+        return { x * s, y * s, z * s, w * s };
+    }
 
-RTVector4D& RTVector4D::operator -=(RTVector4D const& v)
-{
-    x -= v.x;
-    y -= v.y;
-    z -= v.z;
-    w -= v.w;
-    return (*this);
-}
+    RTVec4DImpl& RTVec4DImpl::operator +=(RTVec4DImpl const& v)
+    {
+        x += v.x;
+        y += v.y;
+        z += v.z;
+        w += v.w;
+        return (*this);
+    }
 
-RTVector4D RTVector4D::operator +(RTVector4D const& v) const
-{
-    return { x + v.x, y + v.y, z + v.z, w + v.w };
-}
+    RTVec4DImpl& RTVec4DImpl::operator -=(RTVec4DImpl const& v)
+    {
+        x -= v.x;
+        y -= v.y;
+        z -= v.z;
+        w -= v.w;
+        return (*this);
+    }
 
-RTVector4D RTVector4D::operator -(RTVector4D const& v) const
-{
-    return { x - v.x, y - v.y, z - v.z, w - v.w };
+    RTVec4DImpl RTVec4DImpl::operator +(RTVec4DImpl const& v) const
+    {
+        return { x + v.x, y + v.y, z + v.z, w + v.w };
+    }
+
+    RTVec4DImpl RTVec4DImpl::operator -(RTVec4DImpl const& v) const
+    {
+        return { x - v.x, y - v.y, z - v.z, w - v.w };
+    }
 }

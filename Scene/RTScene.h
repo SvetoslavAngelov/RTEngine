@@ -4,7 +4,7 @@
 
 struct SceneConstantBuffer {
 	using Matrix4D = RTMatrix4D::RTMatrix4DImpl;
-	using Vector4D = RTVector4D;
+	using Vector4D = RTVector4D::RTVec4DImpl;
 
 	Matrix4D projectionToWorld; 
 	Vector4D cameraPosition; 
@@ -14,7 +14,7 @@ struct SceneConstantBuffer {
 };
 
 struct ObjectConstantBuffer {
-	using Vector4D = RTVector4D;
+	using Vector4D = RTVector4D::RTVec4DImpl;
 
 	Vector4D colour; 
 };

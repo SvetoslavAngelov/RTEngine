@@ -36,18 +36,18 @@ void RTDXInterface::OnInit()
 	
 		// Initialise the scene
 		{
-			rtObject.colour = RTVector4D(1.f, 1.f, 1.f, 1.f);
+			rtObject.colour = RTVector4D::RTVec4DImpl(1.f, 1.f, 1.f, 1.f);
 
 			for (int i = 0; i < frameCount; i++)
 			{
 				rtScene[i].projectionToWorld = RTMatrix4D::RTMatrix4DImpl();
 				
-				rtScene[i].cameraPosition = RTVector4D(0.0f, 0.0f, -2.0f, 1.0f);
+				rtScene[i].cameraPosition = RTVector4D::RTVec4DImpl(0.0f, 0.0f, -2.0f, 1.0f);
 				
-				rtScene[i].lightPosition = RTVector4D(0.0f, 1.0f, -2.0f, 1.0f);
+				rtScene[i].lightPosition = RTVector4D::RTVec4DImpl(0.0f, 1.0f, -2.0f, 1.0f);
 				
-				rtScene[i].lightAmbientColour = RTVector4D(0.2f, 0.2f, 0.2f, 1.0f);
-				rtScene[i].lightDiffuseColour = RTVector4D(0.8f, 0.8f, 0.8f, 1.0f);
+				rtScene[i].lightAmbientColour = RTVector4D::RTVec4DImpl(0.2f, 0.2f, 0.2f, 1.0f);
+				rtScene[i].lightDiffuseColour = RTVector4D::RTVec4DImpl(0.8f, 0.8f, 0.8f, 1.0f);
 			}
 		}
 
@@ -183,10 +183,10 @@ void RTDXInterface::CreateRaytracingPipelineStateObject()
 	// Shader config
 	auto shaderConfig = raytracingPipeline.CreateSubobject<CD3DX12_RAYTRACING_SHADER_CONFIG_SUBOBJECT>();
 	using Vec2D = RTVector2D::RTVec2DImpl;
-	using Vec4D = RTVector4D;
+	using Vec4D = RTVector4D::RTVec4DImpl;
 	
-	UINT rayPayloadSize = sizeof(Vec4D); 
-	UINT attributeSize = sizeof(Vec2D); 
+	UINT rayPayloadSize = sizeof(Vec4D);
+	UINT attributeSize = sizeof(Vec2D);
 	shaderConfig->Config(rayPayloadSize, attributeSize);
 
 	// Global root signature
@@ -602,7 +602,7 @@ void RTDXInterface::OnUpdate()
 		float lightSpeed = 0.5f; 
 		float lightAngle = totalTime * lightSpeed * 2.0f * 3.14159f;
 		
-		rtScene[frameIndex].lightPosition = RTVector4D(
+		rtScene[frameIndex].lightPosition = RTVector4D::RTVec4DImpl(
 			lightRadius * sinf(lightAngle),
 			1.0f + 0.5f * sinf(totalTime * 2.0f), 
 			lightRadius * cosf(lightAngle),
@@ -614,7 +614,7 @@ void RTDXInterface::OnUpdate()
 		float pulseSpeed = 2.0f;
 		float pulseValue = 0.2f + pulseAmount * sinf(totalTime * pulseSpeed);
 		
-		rtScene[frameIndex].lightAmbientColour = RTVector4D(
+		rtScene[frameIndex].lightAmbientColour = RTVector4D::RTVec4DImpl(
 			pulseValue,
 			pulseValue,
 			pulseValue * 1.2f,

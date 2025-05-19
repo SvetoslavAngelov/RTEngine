@@ -1,39 +1,45 @@
 #pragma once
 
-struct RTVector4D {
+namespace RTVector4D {
 
-	// Leaving the member variables uninitialised by default.
-	RTVector4D() = default;
+	struct RTVec4DImpl {
 
-	RTVector4D(float a, float b, float c, float d);
-	RTVector4D(RTVector4D const& v);
+		// Leaving the member variables uninitialised by default.
+		RTVec4DImpl() = default;
 
-	// Checks if the value of each vector component is exactly 0. 
-	bool isZeroVector() const;
+		RTVec4DImpl(float a, float b, float c, float d);
+		RTVec4DImpl(RTVec4DImpl const& v);
 
-	// Returns the magnitude, or length, of the vector.
-	float Magnitude() const;
+		// Checks if the value of each vector component is exactly 0. 
+		bool isZeroVector() const;
 
-	// Returns a normalised copy of the vector, if it's safe to do so, otherwise returns a zero vector.
-	RTVector4D GetNormal() const;
+		// Returns the magnitude, or length, of the vector.
+		float Magnitude() const;
 
-	// Returns a normalised copy of the vector, but doesn't check for zero length. 
-	RTVector4D GetUnsafeNormal() const;
+		// Returns a normalised copy of the vector, if it's safe to do so, otherwise returns a zero vector.
+		RTVec4DImpl GetNormal() const;
 
-	// Using the [] operator to iterate over the member variables like an array.
-	float& operator[] (int i);
-	float const& operator[] (int i) const;
+		// Returns a normalised copy of the vector, but doesn't check for zero length. 
+		RTVec4DImpl GetUnsafeNormal() const;
 
-	RTVector4D const& operator =(RTVector4D const& v);
-	RTVector4D const& operator *=(float s);
-	RTVector4D const& operator /=(float s);
-	RTVector4D operator *(float s) const;
-	RTVector4D operator /(float s) const;
-	RTVector4D& operator +=(RTVector4D const& v);
-	RTVector4D& operator -=(RTVector4D const& v);
-	RTVector4D operator +(RTVector4D const& v) const;
-	RTVector4D operator -(RTVector4D const& v) const;
+		// Using the [] operator to iterate over the member variables like an array.
+		float& operator[] (int i);
+		float const& operator[] (int i) const;
 
-	// Member variables
-	float x, y, z, w; 
-};
+		RTVec4DImpl const& operator =(RTVec4DImpl const& v);
+		RTVec4DImpl const& operator *=(float s);
+		RTVec4DImpl const& operator /=(float s);
+		RTVec4DImpl operator *(float s) const;
+		RTVec4DImpl operator /(float s) const;
+		RTVec4DImpl& operator +=(RTVec4DImpl const& v);
+		RTVec4DImpl& operator -=(RTVec4DImpl const& v);
+		RTVec4DImpl operator +(RTVec4DImpl const& v) const;
+		RTVec4DImpl operator -(RTVec4DImpl const& v) const;
+
+		// Member variables
+		float x, y, z, w; 
+	};
+
+	// Convenience typedef for backward compatibility
+	typedef RTVec4DImpl RTVector4D;
+}
